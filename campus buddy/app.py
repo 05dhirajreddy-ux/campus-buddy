@@ -39,9 +39,17 @@ def get_best_study_slot():
 
 def build_crash_plan(subject):
     plans = data.get("crash_plans", {})
-    key = subject.lower().replace(" ", "_")
-    return plans.get(key, None)
+    
+    # normalize subject names
+    mapping = {
+        "dbms": "DBMS",
+        "python": "Python",
+        "cn": "CN"
+    }
+    
+    key = mapping.get(subject.lower(), subject)
 
+    return plans.get(key, f"Crash plan for '{subject}' not found.")
 
 def process_query(query):
     q = query.lower().strip()
