@@ -78,10 +78,22 @@ def index():
 
 @app.route("/copilot", methods=["POST"])
 def copilot():
-    body = request.get_json()
-    query = body.get("query", "")
-    response = process_query(query)
-    return jsonify(response)
+    try:
+        body = request.get_json(silent=True) or {}
+        query = body.get("query", "").strip()
+
+        if not query:
+            return jsonify({"reply": "Please ask something."})
+
+        response = process_query(query)
+
+        if isinstance(response, dict):
+            return jsonify(response)
+
+        return jsonify({"reply": str(response)})
+
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
 
 
 @app.route("/dashboard-data")
