@@ -1,0 +1,14 @@
+{
+  "exam": {
+    "DBMS": "2026-04-10",
+    "Python": "2026-04-15",
+    "CN": "2026-04-18"
+  },
+  "attendance": {
+    "DBMS": 82,
+    "CN": 68,
+    "Python": 75
+  },
+  "pending_assignments": 2,
+  "free_slots": ["7 PM - 9 PM", "6 AM - 7 AM"]
+}

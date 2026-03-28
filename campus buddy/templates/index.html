@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CampusBuddy AI — Academic Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+<!-- Ambient background orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="app-shell">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="19" stroke="url(#g1)" stroke-width="2"/>
+          <path d="M12 28 L20 12 L28 28" stroke="url(#g1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 23 H26" stroke="url(#g1)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="20" cy="12" r="2" fill="url(#g1)"/>
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6EE7B7"/>
+              <stop offset="1" stop-color="#3B82F6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">CampusBuddy</div>
+        <div class="brand-tag">AI Copilot</div>
+      </div>
+    </div>
+
+    <div class="student-card">
+      <div class="student-avatar">AS</div>
+      <div class="student-info">
+        <div class="student-name">Arjun Sharma</div>
+        <div class="student-usn">1BM21CS045 · 5th Sem CSE</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="setView('dashboard')">
+        <span class="nav-icon">⬡</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="setView('exams')">
+        <span class="nav-icon">📅</span> Exams
+      </button>
+      <button class="nav-item" onclick="setView('attendance')">
+        <span class="nav-icon">📊</span> Attendance
+      </button>
+      <button class="nav-item" onclick="setView('assignments')">
+        <span class="nav-icon">📝</span> Assignments
+      </button>
+      <button class="nav-item" onclick="setView('copilot')">
+        <span class="nav-icon">🤖</span> AI Copilot
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span> Toggle Theme
+      </button>
+      <div class="powered-by">Powered by Rule-based AI · VTU Pattern</div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-content">
+
+    <!-- ─── HEADER ─── -->
+    <header class="top-header">
+      <div class="header-left">
+        <h1 class="page-title" id="page-title">Academic Dashboard</h1>
+        <p class="page-sub" id="page-sub">Your proactive copilot for smarter studying</p>
+      </div>
+      <div class="header-right">
+        <div class="live-clock" id="live-clock"></div>
+        <div class="header-alerts" id="header-alerts"></div>
+      </div>
+    </header>
+
+    <!-- ─── DASHBOARD VIEW ─── -->
+    <section class="view active" id="view-dashboard">
+
+      <!-- Pulse Cards -->
+      <div class="pulse-grid">
+
+        <div class="pulse-card card-exam" onclick="askCopilot('When is my next exam?')">
+          <div class="pulse-card-top">
+            <span class="pulse-label">NEXT EXAM</span>
+            <span class="pulse-icon">🎯</span>
+          </div>
+          <div class="pulse-value" id="dash-exam-name">Loading…</div>
+          <div class="pulse-meta" id="dash-exam-days"></div>
+          <div class="pulse-bar"><div class="pulse-fill exam-fill" id="exam-urgency-bar"></div></div>
+        </div>
+
+        <div class="pulse-card card-attend" onclick="askCopilot('Show my attendance')">
+          <div class="pulse-card-top">
+            <span class="pulse-label">ATTENDANCE RISK</span>
+            <span class="pulse-icon">⚠️</span>
+          </div>
+          <div class="pulse-value" id="dash-attend-val">Loading…</div>
+          <div class="pulse-meta" id="dash-attend-sub"></div>
+          <div class="pulse-bar"><div class="pulse-fill attend-fill" id="attend-risk-bar"></div></div>
+        </div>
+
+        <div class="pulse-card card-assign" onclick="askCopilot('Show pending assignments')">
+          <div class="pulse-card-top">
+            <span class="pulse-label">PENDING TASKS</span>
+            <span class="pulse-icon">📋</span>
+          </div>
+          <div class="pulse-value" id="dash-assign-val">Loading…</div>
+          <div class="pulse-meta" id="dash-assign-sub"></div>
+          <div class="pulse-bar"><div class="pulse-fill assign-fill"></div></div>
+        </div>
+
+        <div class="pulse-card card-study" onclick="askCopilot('Show my study slots')">
+          <div class="pulse-card-top">
+            <span class="pulse-label">BEST STUDY SLOT</span>
+            <span class="pulse-icon">⚡</span>
+          </div>
+          <div class="pulse-value" id="dash-slot-val">Loading…</div>
+          <div class="pulse-meta" id="dash-slot-sub"></div>
+          <div class="pulse-bar"><div class="pulse-fill slot-fill"></div></div>
+        </div>
+
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section-header">
+        <h2 class="section-title">Quick Actions</h2>
+        <span class="section-badge">AI-Powered</span>
+      </div>
+
+      <div class="quick-actions">
+        <button class="qa-btn qa-crash" onclick="setView('copilot'); setTimeout(()=>askCopilot('Create DBMS crash plan'),200)">
+          <div class="qa-icon">🚀</div>
+          <div class="qa-text">
+            <div class="qa-title">DBMS Crash Plan</div>
+            <div class="qa-sub">2-day revision roadmap</div>
+          </div>
+        </button>
+        <button class="qa-btn qa-attend" onclick="setView('copilot'); setTimeout(()=>askCopilot('Show my attendance'),200)">
+          <div class="qa-icon">📊</div>
+          <div class="qa-text">
+            <div class="qa-title">Attendance Check</div>
+            <div class="qa-sub">Risk analysis + fix plan</div>
+          </div>
+        </button>
+        <button class="qa-btn qa-exam" onclick="setView('copilot'); setTimeout(()=>askCopilot('Show all upcoming exams'),200)">
+          <div class="qa-icon">🗓️</div>
+          <div class="qa-text">
+            <div class="qa-title">Exam Schedule</div>
+            <div class="qa-sub">Countdown + syllabus</div>
+          </div>
+        </button>
+        <button class="qa-btn qa-stress" onclick="setView('copilot'); setTimeout(()=>askCopilot('I am stressed about exams'),200)">
+          <div class="qa-icon">💙</div>
+          <div class="qa-text">
+            <div class="qa-title">Stress Relief</div>
+            <div class="qa-sub">Low-anxiety revision tips</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Academic Pulse Timeline -->
+      <div class="section-header">
+        <h2 class="section-title">Academic Pulse</h2>
+        <span class="section-badge">Live</span>
+      </div>
+      <div class="timeline" id="dashboard-timeline"></div>
+
+    </section>
+
+    <!-- ─── COPILOT VIEW ─── -->
+    <section class="view" id="view-copilot">
+      <div class="copilot-container">
+
+        <div class="copilot-intro">
+          <div class="copilot-avatar-lg">
+            <div class="copilot-pulse-ring"></div>
+            🤖
+          </div>
+          <div>
+            <h2 class="copilot-title">AI Academic Copilot</h2>
+            <p class="copilot-desc">Ask me anything about exams, attendance, assignments, or get a personalised crash plan.</p>
+          </div>
+        </div>
+
+        <!-- Chat messages -->
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-message bot-message">
+            <div class="msg-avatar">🤖</div>
+            <div class="msg-bubble">
+              <p>👋 Hey <strong>Arjun</strong>! I'm your Academic Copilot.</p>
+              <p>I proactively track your exams, attendance, and assignments. Try asking me:</p>
+              <div class="suggestion-chips">
+                <button class="chip" onclick="askCopilot('When is my next exam?')">📅 Next exam?</button>
+                <button class="chip" onclick="askCopilot('Show my attendance')">📊 Attendance</button>
+                <button class="chip" onclick="askCopilot('Create DBMS crash plan')">🚀 DBMS crash plan</button>
+                <button class="chip" onclick="askCopilot('Show pending assignments')">📋 Assignments</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="chat-input-area">
+          <div class="quick-prompts">
+            <button class="qp-btn" onclick="askCopilot('Create DBMS crash plan')">🚀 DBMS Crash Plan</button>
+            <button class="qp-btn" onclick="askCopilot('Check my attendance')">⚠️ Attendance Risk</button>
+            <button class="qp-btn" onclick="askCopilot('When is my next exam?')">🎯 Exam Countdown</button>
+            <button class="qp-btn" onclick="askCopilot('Show my study slots')">⚡ Study Slots</button>
+            <button class="qp-btn" onclick="askCopilot('I am feeling stressed')">💙 Feeling Stressed</button>
+            <button class="qp-btn" onclick="askCopilot('Create Python crash plan')">🐍 Python Crash Plan</button>
+          </div>
+          <div class="input-row">
+            <input type="text" class="chat-input" id="chat-input"
+              placeholder="Ask anything — exams, attendance, crash plans…"
+              onkeydown="if(event.key==='Enter') sendMessage()" />
+            <button class="send-btn" onclick="sendMessage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── EXAMS VIEW ─── -->
+    <section class="view" id="view-exams">
+      <div class="section-header">
+        <h2 class="section-title">Upcoming Exams</h2>
+        <span class="section-badge">VTU Pattern</span>
+      </div>
+      <div class="exam-cards-grid" id="exam-cards-grid">
+        <div class="loading-spinner">Loading exam schedule…</div>
+      </div>
+    </section>
+
+    <!-- ─── ATTENDANCE VIEW ─── -->
+    <section class="view" id="view-attendance">
+      <div class="section-header">
+        <h2 class="section-title">Attendance Tracker</h2>
+        <span class="section-badge">75% Threshold</span>
+      </div>
+      <div class="attend-cards" id="attend-cards">
+        <div class="loading-spinner">Loading attendance data…</div>
+      </div>
+    </section>
+
+    <!-- ─── ASSIGNMENTS VIEW ─── -->
+    <section class="view" id="view-assignments">
+      <div class="section-header">
+        <h2 class="section-title">Assignments & Submissions</h2>
+        <span class="section-badge" id="pending-badge">Loading…</span>
+      </div>
+      <div class="assign-list" id="assign-list">
+        <div class="loading-spinner">Loading assignments…</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+let currentTheme = 'dark';
+function toggleTheme() {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  document.getElementById('theme-icon').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+}
+
+// ═══════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('live-clock').textContent =
+    now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════
+const viewTitles = {
+  dashboard: ['Academic Dashboard', 'Your proactive copilot for smarter studying'],
+  exams: ['Exam Schedule', 'Countdown timers & syllabus at a glance'],
+  attendance: ['Attendance Tracker', 'Stay above 75% — your academic safety net'],
+  assignments: ['Assignments', 'Track pending submissions & deadlines'],
+  copilot: ['AI Copilot', 'Ask anything — I reason, predict, and plan for you']
+};
+
+function setView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelector(`.nav-item[onclick*="${view}"]`).classList.add('active');
+  const [title, sub] = viewTitles[view];
+  document.getElementById('page-title').textContent = title;
+  document.getElementById('page-sub').textContent = sub;
+
+  if (view === 'exams') renderExams();
+  if (view === 'attendance') renderAttendance();
+  if (view === 'assignments') renderAssignments();
+}
+
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const appData = {
+  exams: [
+    { subject: "DBMS", code: "21CS53", date: "2026-04-02", type: "CIE-3", room: "Block A - 204", syllabus: ["ER Model", "SQL Joins", "Normalization", "Transactions", "Indexing"] },
+    { subject: "Python Programming", code: "21CS55", date: "2026-04-08", type: "CIE-3", room: "Block B - 101", syllabus: ["OOP Concepts", "File Handling", "Decorators", "Generators", "Pandas"] },
+    { subject: "Computer Networks", code: "21CS54", date: "2026-04-14", type: "CIE-3", room: "Block A - 301", syllabus: ["OSI Model", "TCP/IP", "Routing Algorithms", "Congestion Control", "HTTP/DNS"] },
+    { subject: "Operating Systems", code: "21CS52", date: "2026-04-20", type: "SEE", room: "Exam Hall - 1", syllabus: ["Process Scheduling", "Memory Management", "Deadlocks", "File Systems", "Semaphores"] }
+  ],
+  attendance: [
+    { subject: "DBMS", percentage: 64.3, classes_attended: 18, total_classes: 28 },
+    { subject: "Python Programming", percentage: 80.0, classes_attended: 24, total_classes: 30 },
+    { subject: "Computer Networks", percentage: 74.1, classes_attended: 20, total_classes: 27 },
+    { subject: "Operating Systems", percentage: 81.3, classes_attended: 26, total_classes: 32 },
+    { subject: "Design & Analysis of Algorithms", percentage: 60.0, classes_attended: 15, total_classes: 25 }
+  ],
+  assignments: [
+    { subject: "DBMS", title: "ER Diagram for Hospital Management System", due_date: "2026-03-30", submitted: false, priority: "high" },
+    { subject: "Python Programming", title: "File Handling Mini Project", due_date: "2026-04-01", submitted: false, priority: "high" },
+    { subject: "Computer Networks", title: "Subnetting Assignment", due_date: "2026-04-05", submitted: false, priority: "medium" },
+    { subject: "Operating Systems", title: "Process Scheduling Simulation", due_date: "2026-03-28", submitted: true, priority: "high" },
+    { subject: "Design & Analysis of Algorithms", title: "Sorting Algorithm Analysis Report", due_date: "2026-04-03", submitted: false, priority: "medium" }
+  ],
+  free_slots: [
+    { day: "Monday", time: "12:00 PM – 1:00 PM", duration_mins: 60, recommended_subject: "DBMS", reason: "Exam in 5 days — highest priority" },
+    { day: "Tuesday", time: "3:00 PM – 5:00 PM", duration_mins: 120, recommended_subject: "Python", reason: "Assignment due soon" },
+    { day: "Thursday", time: "4:00 PM – 6:00 PM", duration_mins: 120, recommended_subject: "DBMS", reason: "Pre-exam revision block" }
+  ]
+};
+
+function daysUntil(dateStr) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD INIT
+// ═══════════════════════════════════════════
+function initDashboard() {
+  // Nearest exam
+  const upcoming = appData.exams.map(e => ({ ...e, days: daysUntil(e.date) })).filter(e => e.days >= 0).sort((a,b) => a.days - b.days);
+  if (upcoming.length) {
+    const ne = upcoming[0];
+    document.getElementById('dash-exam-name').textContent = ne.subject;
+    document.getElementById('dash-exam-days').innerHTML = `<span class="${ne.days <= 3 ? 'danger-text' : ''}">${ne.days === 0 ? '🚨 TODAY!' : ne.days === 1 ? '⚡ Tomorrow!' : `In ${ne.days} days`}</span> · ${ne.type}`;
+    const urgency = Math.max(0, Math.min(100, (10 - ne.days) / 10 * 100));
+    document.getElementById('exam-urgency-bar').style.width = urgency + '%';
+  }
+
+  // Attendance risks
+  const risks = appData.attendance.filter(a => a.percentage < 75);
+  document.getElementById('dash-attend-val').textContent = risks.length === 0 ? 'All Safe ✅' : `${risks.length} at Risk`;
+  document.getElementById('dash-attend-sub').textContent = risks.length > 0 ? risks.map(r => r.subject).join(', ') : 'No attendance issues';
+  document.getElementById('attend-risk-bar').style.width = (risks.length / appData.attendance.length * 100) + '%';
+
+  // Pending assignments
+  const pending = appData.assignments.filter(a => !a.submitted);
+  document.getElementById('dash-assign-val').textContent = `${pending.length} Pending`;
+  document.getElementById('dash-assign-sub').textContent = pending.length > 0 ? pending[0].title.substring(0,40) + '…' : 'All submitted!';
+
+  // Best study slot
+  const slot = appData.free_slots[0];
+  document.getElementById('dash-slot-val').textContent = slot.day;
+  document.getElementById('dash-slot-sub').textContent = `${slot.time} · ${slot.recommended_subject}`;
+
+  // Header alerts
+  let alerts = [];
+  if (upcoming.length && upcoming[0].days <= 3) alerts.push(`🔴 ${upcoming[0].subject} in ${upcoming[0].days}d`);
+  if (risks.length) alerts.push(`⚠️ ${risks.length} attendance risk`);
+  document.getElementById('header-alerts').innerHTML = alerts.map(a => `<span class="alert-chip">${a}</span>`).join('');
+
+  // Timeline
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const items = [];
+  appData.exams.forEach(e => {
+    const d = daysUntil(e.date);
+    if (d >= 0 && d <= 30) items.push({ type: 'exam', label: `${e.subject} ${e.type}`, days: d, urgent: d <= 3 });
+  });
+  appData.assignments.filter(a => !a.submitted).forEach(a => {
+    const d = daysUntil(a.due_date);
+    items.push({ type: 'assignment', label: `${a.subject}: ${a.title.substring(0,35)}…`, days: Math.max(0,d), urgent: d <= 2 });
+  });
+  items.sort((a,b) => a.days - b.days);
+
+  const tl = document.getElementById('dashboard-timeline');
+  tl.innerHTML = items.slice(0,6).map(item => `
+    <div class="tl-item ${item.urgent ? 'tl-urgent' : ''}">
+      <div class="tl-dot ${item.type === 'exam' ? 'dot-exam' : 'dot-assign'}"></div>
+      <div class="tl-content">
+        <span class="tl-label">${item.label}</span>
+        <span class="tl-days ${item.urgent ? 'danger-text' : ''}">${item.days === 0 ? 'Today!' : item.days === 1 ? 'Tomorrow' : `In ${item.days} days`}</span>
+      </div>
+      ${item.urgent ? '<span class="tl-alert">!</span>' : ''}
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// RENDER EXAMS
+// ═══════════════════════════════════════════
+function renderExams() {
+  const grid = document.getElementById('exam-cards-grid');
+  const colors = ['var(--accent-teal)', 'var(--accent-blue)', 'var(--accent-amber)', 'var(--accent-rose)'];
+  grid.innerHTML = appData.exams.map((e, i) => {
+    const days = daysUntil(e.date);
+    const urgent = days <= 3;
+    return `
+      <div class="exam-card ${urgent ? 'exam-card-urgent' : ''}" style="--card-accent:${colors[i]}">
+        <div class="ec-header">
+          <div>
+            <div class="ec-subject">${e.subject}</div>
+            <div class="ec-code">${e.code} · ${e.type}</div>
+          </div>
+          <div class="ec-countdown ${urgent ? 'danger-text' : ''}">
+            <div class="ec-days">${days}</div>
+            <div class="ec-days-label">days</div>
+          </div>
+        </div>
+        <div class="ec-meta">📅 ${e.date} &nbsp;|&nbsp; 📍 ${e.room}</div>
+        <div class="ec-syllabus">
+          ${e.syllabus.map(s => `<span class="syllabus-tag">${s}</span>`).join('')}
+        </div>
+        ${urgent ? '<div class="ec-warning">⚠️ Exam in ' + days + ' day(s) — start revision now!</div>' : ''}
+        <button class="ec-crash-btn" onclick="setView('copilot'); setTimeout(()=>askCopilot('Create ${e.subject} crash plan'),200)">
+          🚀 Generate Crash Plan
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// RENDER ATTENDANCE
+// ═══════════════════════════════════════════
+function renderAttendance() {
+  const container = document.getElementById('attend-cards');
+  container.innerHTML = appData.attendance.map(a => {
+    const pct = a.percentage;
+    const risk = pct < 75;
+    const color = pct < 65 ? 'var(--accent-rose)' : pct < 75 ? 'var(--accent-amber)' : 'var(--accent-teal)';
+    let classesNeeded = 0;
+    if (risk) {
+      let att = a.classes_attended, tot = a.total_classes;
+      while ((att / (tot + classesNeeded)) * 100 < 75) classesNeeded++;
+    }
+    return `
+      <div class="attend-card ${risk ? 'attend-risk' : ''}">
+        <div class="ac-left">
+          <div class="ac-subject">${a.subject}</div>
+          <div class="ac-stats">${a.classes_attended}/${a.total_classes} classes attended</div>
+          ${risk ? `<div class="ac-warning">⚠️ Attend ${classesNeeded} more consecutive classes</div>` : '<div class="ac-ok">✅ Safe zone — no issues</div>'}
+        </div>
+        <div class="ac-right">
+          <div class="ac-ring">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="var(--surface-2)" stroke-width="8"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="${color}" stroke-width="8"
+                stroke-dasharray="${2*Math.PI*32}" stroke-dashoffset="${2*Math.PI*32*(1-pct/100)}"
+                stroke-linecap="round" transform="rotate(-90 40 40)"/>
+            </svg>
+            <div class="ac-pct-label" style="color:${color}">${pct.toFixed(0)}%</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// RENDER ASSIGNMENTS
+// ═══════════════════════════════════════════
+function renderAssignments() {
+  const pending = appData.assignments.filter(a => !a.submitted).length;
+  document.getElementById('pending-badge').textContent = `${pending} Pending`;
+  const list = document.getElementById('assign-list');
+  list.innerHTML = appData.assignments.map(a => {
+    const days = daysUntil(a.due_date);
+    const overdue = days < 0;
+    return `
+      <div class="assign-item ${a.submitted ? 'assign-done' : overdue ? 'assign-overdue' : ''}">
+        <div class="ai-check ${a.submitted ? 'check-done' : 'check-pending'}">${a.submitted ? '✓' : '○'}</div>
+        <div class="ai-content">
+          <div class="ai-subject">${a.subject}</div>
+          <div class="ai-title">${a.title}</div>
+        </div>
+        <div class="ai-right">
+          <span class="ai-priority priority-${a.priority}">${a.priority}</span>
+          <div class="ai-due ${overdue && !a.submitted ? 'danger-text' : ''}">
+            ${a.submitted ? '✅ Submitted' : overdue ? '🔴 Overdue!' : `Due in ${days}d`}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// CHAT / COPILOT
+// ═══════════════════════════════════════════
+function askCopilot(text) {
+  if (document.getElementById('view-copilot').classList.contains('active')) {
+    document.getElementById('chat-input').value = text;
+    sendMessage();
+  } else {
+    setView('copilot');
+    setTimeout(() => {
+      document.getElementById('chat-input').value = text;
+      sendMessage();
+    }, 300);
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+
+  appendMessage('user', `<p>${query}</p>`);
+  showTyping();
+
+  try {
+    const res = await fetch('/copilot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    });
+    const data = await res.json();
+    removeTyping();
+    renderBotResponse(data);
+  } catch(e) {
+    removeTyping();
+    appendMessage('bot', '<p>⚠️ Could not reach the server. Make sure Flask is running.</p>');
+  }
+}
+
+function appendMessage(role, html) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-message ${role === 'user' ? 'user-message' : 'bot-message'}`;
+  div.innerHTML = role === 'user'
+    ? `<div class="msg-bubble user-bubble">${html}</div><div class="msg-avatar user-avatar">AS</div>`
+    : `<div class="msg-avatar">🤖</div><div class="msg-bubble">${html}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.id = 'typing-indicator';
+  div.className = 'chat-message bot-message';
+  div.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-bubble typing-bubble"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+function renderBotResponse(data) {
+  let html = `<p class="response-msg">${data.message}</p>`;
+
+  if (data.type === 'exam') {
+    if (data.all) {
+      html += `<div class="resp-exam-list">`;
+      data.all.forEach(e => {
+        const urgent = e.days <= 3;
+        html += `
+          <div class="resp-exam-item ${urgent ? 'resp-exam-urgent' : ''}">
+            <div>
+              <strong>${e.subject}</strong> · ${e.type}
+              <div class="resp-exam-date">📅 ${e.date}</div>
+            </div>
+            <div class="resp-countdown ${urgent ? 'danger-text' : ''}">${e.days}d</div>
+          </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  else if (data.type === 'attendance') {
+    html += `<div class="resp-attend-list">`;
+    data.data.forEach(s => {
+      const color = s.percentage < 65 ? '#f87171' : s.percentage < 75 ? '#fbbf24' : '#34d399';
+      html += `
+        <div class="resp-attend-item">
+          <div class="resp-attend-subject">${s.subject}</div>
+          <div class="resp-attend-bar-wrap">
+            <div class="resp-attend-bar" style="width:${s.percentage}%;background:${color}"></div>
+          </div>
+          <div class="resp-attend-pct" style="color:${color}">${s.percentage.toFixed(1)}%</div>
+          <div class="resp-attend-msg">${s.message}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  else if (data.type === 'assignments') {
+    if (data.pending && data.pending.length) {
+      html += `<div class="resp-assign-list">`;
+      data.pending.forEach(a => {
+        const days = daysUntil(a.due_date);
+        html += `
+          <div class="resp-assign-item priority-border-${a.priority}">
+            <span class="resp-assign-subj">${a.subject}</span>
+            <span class="resp-assign-title">${a.title}</span>
+            <span class="resp-assign-due ${days < 0 ? 'danger-text' : ''}">${days < 0 ? '🔴 Overdue' : `Due in ${days}d`}</span>
+          </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  else if (data.type === 'study_plan') {
+    html += `<div class="resp-slots">`;
+    data.slots.forEach(s => {
+      html += `
+        <div class="resp-slot-item">
+          <div class="resp-slot-day">${s.day}</div>
+          <div class="resp-slot-details">
+            <strong>${s.time}</strong> · ${s.duration_mins} min
+            <div class="resp-slot-reason">📌 ${s.recommended_subject}: ${s.reason}</div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  else if (data.type === 'crash_plan') {
+    if (data.days) {
+      html += `<div class="crash-plan-wrap">`;
+      if (data.tips) {
+        html += `<div class="crash-tips"><div class="crash-tips-title">💡 Pro Tips</div>`;
+        data.tips.forEach(t => { html += `<div class="crash-tip">→ ${t}</div>`; });
+        html += `</div>`;
+      }
+      data.days.forEach(day => {
+        html += `
+          <div class="crash-day">
+            <div class="crash-day-header">${day.emoji} ${day.day}</div>
+            <div class="crash-topics">`;
+        day.topics.forEach(t => {
+          html += `
+              <div class="crash-topic">
+                <div class="ct-header">
+                  <span class="ct-name">${t.topic}</span>
+                  <span class="ct-weight">${t.weight}</span>
+                  <span class="ct-time">⏱ ${t.time}</span>
+                </div>
+                <div class="ct-tip">💬 ${t.tip}</div>
+              </div>`;
+        });
+        html += `</div></div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  else if (data.type === 'stress_support') {
+    html += `<div class="stress-tips">`;
+    data.tips.forEach(t => { html += `<div class="stress-tip">${t}</div>`; });
+    html += `</div>`;
+    if (data.nearest_exam) {
+      html += `<div class="stress-exam-note">📅 Focus on <strong>${data.nearest_exam}</strong> — ${data.days_left} days left. You can do this!</div>`;
+    }
+  }
+
+  else if (data.type === 'greeting') {
+    if (data.alerts.length) {
+      html += `<div class="greeting-alerts">`;
+      data.alerts.forEach(a => { html += `<div class="greeting-alert">${a}</div>`; });
+      html += `</div>`;
+    }
+    html += `<div class="suggestion-chips">
+      <button class="chip" onclick="askCopilot('When is my next exam?')">📅 Exams</button>
+      <button class="chip" onclick="askCopilot('Show my attendance')">📊 Attendance</button>
+      <button class="chip" onclick="askCopilot('Create DBMS crash plan')">🚀 Crash Plan</button>
+    </div>`;
+  }
+
+  else if (data.type === 'default') {
+    html += `<div class="suggestion-chips">`;
+    data.suggestions.forEach(s => { html += `<button class="chip" onclick="askCopilot('${s}')">${s}</button>`; });
+    html += `</div>`;
+  }
+
+  appendMessage('bot', html);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initDashboard();
+});
+</script>
+</body>
+</html>
